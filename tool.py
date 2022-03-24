@@ -1,20 +1,13 @@
-import sys, os
-sys.path.append(os.path.join(os.path.dirname('\\scb-sv-fs-1\users$\as2238\Desktop\TwitterBot'), '..'))
-
-from tweepy.streaming import Streamlistener
-from tweepy import OAuthHandler
-from tweepy import Stream
-
+import tweepy
+import pandas as pd
 import credentials
 
-
-
-auth = tweepy.OAuth1UserHandler(
-   consumer_key, consumer_secret, access_token, access_token_secret
-)
-
+auth = tweepy.OAuthHandler(credentials.apiKey, credentials.apiKeySecret)
+auth.set_access_token(credentials.accessToken, credentials.accessTokenSecret)
 api = tweepy.API(auth)
+keyword = 'Bitcoin'
+date_since = '2022-03-20'
+cursor = tweepy.Cursor(api.search_tweets, q= 'Bitcoin', tweet_mode="extended").items(1)
 
-public_tweets = api.home_timeline()
-for tweet in public_tweets:
-    print(tweet.text)
+for i in cursor:
+   print(i.full_text)
