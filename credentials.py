@@ -1,6 +1,0 @@
-#Variables that contain the user credentials to access Twitter API
-apiKey = "WcWETtMZNBFjMVBy3PBNs86l6"
-apiKeySecret = "SruqWxFtoRJUG2soTArkn7MqQJfWYEaPwOZrnwr8uhpFdmnsdP"
-authentication = "AAAAAAAAAAAAAAAAAAAAAGmBagEAAAAAA6nGieReDzkZJxC7hg0v1x%2Fy%2Fzs%3DmXcJOS4I1dB9VNN4kZxtRWiwIW4HqS2eOmLG5szVmYOb4n4MK7"
-accessToken = "1455457811186454530-au7qfjplTUVUNY8tqNos8b6fFsj18c"
-accessTokenSecret = "XI51JF1PVNtmZfUSw3IA60XJPf1Q5161gyWofp3uRPRwH"
