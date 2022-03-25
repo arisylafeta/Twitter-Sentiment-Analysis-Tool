@@ -72,10 +72,10 @@ plt.tight_layout()
 plt.show()
 
 COMMENTED OUT ____"""
-columns = ['User', 'Tweet', 'Followers', 'Retweets', 'Favorites', 'Date']
+columns = ['User', 'Tweet', 'Followers', 'Retweets', 'Favorites', 'Location', 'Date']
 data = []
 for tweet in tweets:
-   data.append([tweet.user.screen_name, tweet.text, tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count, tweet.created_at])
+   data.append([tweet.user.screen_name, tweet.text, tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count, tweet.location, tweet.created_at])
 
 df = pd.DataFrame(data, columns=columns)
 
