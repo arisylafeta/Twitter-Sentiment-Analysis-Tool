@@ -2,8 +2,45 @@ from textblob import TextBlob
 import tweepy
 import matplotlib.pyplot as plt
 import pandas as pd
-import credentials
 import re
+import streamlit as st
+
+st.set_page_config(layout="wide")
+st.markdown("""
+<style>
+.big-font {
+    font-size:30px !important;
+    font-weight: 600;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.write("Hello BABAT e shehrit")
+st.sidebar.markdown('<p class="big-font">Welcome to TwitterSent 🎉 </p>', unsafe_allow_html=True)
+st.sidebar.write("This platform utilizes natural language processing to extract insight from tweets. Currently the tool offers the following options")
+
+code = '''def TwitterSent():
+      hashtag_analysis = "True"
+      sentiment_analysis = "True"
+      print("more to come...")'''
+st.sidebar.code(code, language='python')
+
+with st.sidebar.form("contact_form", clear_on_submit=False):
+   st.write("Want to contact me? Complete the following")
+   radio_val = st.radio("What's your title?", ('Enthusiast','Recruiter'))
+   text_area = st.text_area("Write your comment", max_chars=200, height=50)
+
+   submitted = st.form_submit_button("Submit")
+   if submitted:
+        st.write( "radio", radio_val)
+
+class myCredentials:
+  apiKey = "WAnzVHUJZLwBrWxlCpSo86CK0"
+  apiKeySecret = "d0s4JnADB2HY2xycj7JlJQKc4UAGdLZZMnaM9cuBvWU9XkBu3c"
+  accessToken = "1455457811186454530-dI3GomJvxFMLzKiMXMwLSsPAp2sUAn"
+  accessTokenSecret = "VueS6hQ7FBGqcZ3WJKSUmdpjeQMe4gVpoocitTnLeccxD"
+
+credentials = myCredentials()
 
 #Creating a percentage function that will be useful when doing the sentiment analysis
 def percentage(part, whole):
