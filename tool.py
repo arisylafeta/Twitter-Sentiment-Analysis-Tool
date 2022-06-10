@@ -1,21 +1,32 @@
 from textblob import TextBlob
 import tweepy
 import matplotlib.pyplot as plt
+from matplotlib import image
 import pandas as pd
 import re
 import streamlit as st
 
-st.set_page_config(layout="wide")
+img = image.imread("logo.png")
+
 st.markdown("""
 <style>
 .big-font {
     font-size:30px !important;
     font-weight: 600;
 }
+.header {
+   font-size: 40px;
+   font-weight: 900;
+   font-family: 'Arial'
+}
 </style>
 """, unsafe_allow_html=True)
 
-st.write("Hello BABAT e shehrit")
+col1, col2, col3 = st.columns([1,1,1])
+col2.image(img, width=120)
+
+
+
 st.sidebar.markdown('<p class="big-font">Welcome to TwitterSent 🎉 </p>', unsafe_allow_html=True)
 st.sidebar.write("This platform utilizes natural language processing to extract insight from tweets. Currently the tool offers the following options")
 
