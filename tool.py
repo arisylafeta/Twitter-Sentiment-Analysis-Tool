@@ -6,6 +6,43 @@ import pandas as pd
 import re
 import streamlit as st
 
+
+class myCredentials:
+  apiKey = "WAnzVHUJZLwBrWxlCpSo86CK0"
+  apiKeySecret = "d0s4JnADB2HY2xycj7JlJQKc4UAGdLZZMnaM9cuBvWU9XkBu3c"
+  accessToken = "1455457811186454530-dI3GomJvxFMLzKiMXMwLSsPAp2sUAn"
+  accessTokenSecret = "VueS6hQ7FBGqcZ3WJKSUmdpjeQMe4gVpoocitTnLeccxD"
+
+credentials = myCredentials()
+
+#Linking with our Twitter API, If connection fails, check that you've filled credentials in credentials.py and read the README.txt file
+auth = tweepy.OAuthHandler(credentials.apiKey, credentials.apiKeySecret)
+auth.set_access_token(credentials.accessToken, credentials.accessTokenSecret)
+api = tweepy.API(auth)
+
+def run(keyword, num, list):
+   #Fetch the tweeets based on keyword and items
+   tweets = tweepy.Cursor(api.search_tweets,q=keyword + "-filter:retweets", lang="en", tweet_mode="extended").items(num)
+   #Create a list of columns and an array
+   columns = ['User', 'Text', 'Followers', 'Retweets', 'Favorites', 'Date']
+   data = []
+
+   #Append tweet information to data, create a dataframe with columns and save it into a csv.
+   for tweet in tweets:
+      data.append([tweet.user.screen_name, tweet.full_text, tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count, tweet.created_at])
+
+   df = pd.DataFrame(data, columns=columns)
+   """df.to_csv('tweets.csv', index = False)
+
+   # read formatted info from csv and assing it to tweets
+   tweets = pd.read_csv("tweets.csv", index_col = 0)
+
+
+st.set_page_config(
+   layout="centered",
+   page_title="TwitterSent",
+   page_icon="🔎"
+)
 img = image.imread("logo.png")
 
 st.markdown("""
@@ -22,8 +59,19 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
 col1, col2, col3 = st.columns([1,1,1])
 col2.image(img, width=120)
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.markdown('<p class="big-font">Start out by searching a keyword </p>', unsafe_allow_html=True)
+
+search = st.text_input("Enter your keyword")
+tweetNum = st.slider("Select the number of tweets to be searched", min_value=50, max_value=200)
+features = st.multiselect("Select the analysis types you want to conduct", options=["hashtag analysis", "sentiment analysis"])
+st.button("Submit", on_click=run(search, tweetNum, features))
 
 
 
@@ -45,13 +93,7 @@ with st.sidebar.form("contact_form", clear_on_submit=False):
    if submitted:
         st.write( "radio", radio_val)
 
-class myCredentials:
-  apiKey = "WAnzVHUJZLwBrWxlCpSo86CK0"
-  apiKeySecret = "d0s4JnADB2HY2xycj7JlJQKc4UAGdLZZMnaM9cuBvWU9XkBu3c"
-  accessToken = "1455457811186454530-dI3GomJvxFMLzKiMXMwLSsPAp2sUAn"
-  accessTokenSecret = "VueS6hQ7FBGqcZ3WJKSUmdpjeQMe4gVpoocitTnLeccxD"
 
-credentials = myCredentials()
 
 #Creating a percentage function that will be useful when doing the sentiment analysis
 def percentage(part, whole):
@@ -109,21 +151,7 @@ def sentiment(tweets):
    plt.show()
 
 def hashtag(tweets):
-   #Create a list of columns and an array
-   columns = ['User', 'Text', 'Followers', 'Retweets', 'Favorites', 'Date']
-   data = []
-
-   #Append tweet information to data, create a dataframe with columns and save it into a csv.
-   for tweet in tweets:
-      data.append([tweet.user.screen_name, tweet.full_text, tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count, tweet.created_at])
-
-   df = pd.DataFrame(data, columns=columns)
-   df.to_csv('tweets.csv', index = False)
-
-   # read formatted info from csv and assing it to tweets
-   tweets = pd.read_csv("tweets.csv", index_col = 0)
-
-
+   
    def find_hashtags(tweet):
       #This function extracts hashtags from the tweets.
       return re.findall('(#[A-Za-z]+[A-Za-z0-9-_]+)', tweet)
@@ -140,28 +168,8 @@ def hashtag(tweets):
    flat_hashtag['hashtags'].value_counts()[:20].plot(kind='barh')
    plt.show()
 
-#Linking with our Twitter API, If connection fails, check that you've filled credentials in credentials.py and read the README.txt file
-auth = tweepy.OAuthHandler(credentials.apiKey, credentials.apiKeySecret)
-auth.set_access_token(credentials.accessToken, credentials.accessTokenSecret)
-api = tweepy.API(auth)
-
-#Prompting user for their searchterm and how sample size
-keyword = input("Enter keyword/hashtag to search about: ")
-noOfSearchTerm = int(input("Enter how many tweets to analyze: "))
-
-#Fetch the tweeets based on keyword and items
-tweets = tweepy.Cursor(api.search_tweets,q= keyword + "-filter:retweets", lang="en", tweet_mode="extended").items(noOfSearchTerm)
-
-featureWanted = ''
-
-while(featureWanted != "S" and featureWanted != "H"):
-   featureWanted = input("Would you want to perform sentiment analysis(S) or hashtag analysis(H) on your tweets? ")
 
 
-if(featureWanted == "S"):
-   sentiment(tweets)
-elif(featureWanted == "H"):
-   hashtag(tweets)
 
 
 
