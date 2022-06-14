@@ -1,4 +1,6 @@
 from textblob import TextBlob
+from datetime import timedelta
+import asyncio
 import tweepy
 import matplotlib.pyplot as plt
 from matplotlib import image
@@ -6,96 +8,46 @@ import pandas as pd
 import re
 import streamlit as st
 
-
+#API Authentication Block
 class myCredentials:
   apiKey = "WAnzVHUJZLwBrWxlCpSo86CK0"
   apiKeySecret = "d0s4JnADB2HY2xycj7JlJQKc4UAGdLZZMnaM9cuBvWU9XkBu3c"
   accessToken = "1455457811186454530-dI3GomJvxFMLzKiMXMwLSsPAp2sUAn"
   accessTokenSecret = "VueS6hQ7FBGqcZ3WJKSUmdpjeQMe4gVpoocitTnLeccxD"
-
-credentials = myCredentials()
-
 #Linking with our Twitter API, If connection fails, check that you've filled credentials in credentials.py and read the README.txt file
+credentials = myCredentials()
 auth = tweepy.OAuthHandler(credentials.apiKey, credentials.apiKeySecret)
 auth.set_access_token(credentials.accessToken, credentials.accessTokenSecret)
 api = tweepy.API(auth)
 
-def run(keyword, num, list):
+tweets = pd.read_csv("tweets.csv", index_col = 0)
+#All function definitions 
+def fetchTweets(keyword, num, date):
    #Fetch the tweeets based on keyword and items
-   tweets = tweepy.Cursor(api.search_tweets,q=keyword + "-filter:retweets", lang="en", tweet_mode="extended").items(num)
+   global tweets
+
+   apiL = tweepy.Cursor(api.search_tweets,q=keyword + "-filter:retweets", lang="en", tweet_mode="extended", until=(date + timedelta(days=1))).items(num)
    #Create a list of columns and an array
    columns = ['User', 'Text', 'Followers', 'Retweets', 'Favorites', 'Date']
    data = []
 
    #Append tweet information to data, create a dataframe with columns and save it into a csv.
-   for tweet in tweets:
+   for tweet in apiL:
       data.append([tweet.user.screen_name, tweet.full_text, tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count, tweet.created_at])
 
    df = pd.DataFrame(data, columns=columns)
-   """df.to_csv('tweets.csv', index = False)
+   df.to_csv('tweets.csv')
 
    # read formatted info from csv and assing it to tweets
    tweets = pd.read_csv("tweets.csv", index_col = 0)
 
+def analysis(features, tweets):
+   for method in features:
+      if "hashtag" in method:
+         hashtag(tweets)
+      if "sentiment" in method:
+         sentiment(tweets) 
 
-st.set_page_config(
-   layout="centered",
-   page_title="TwitterSent",
-   page_icon="🔎"
-)
-img = image.imread("logo.png")
-
-st.markdown("""
-<style>
-.big-font {
-    font-size:30px !important;
-    font-weight: 600;
-}
-.header {
-   font-size: 40px;
-   font-weight: 900;
-   font-family: 'Arial'
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-col1, col2, col3 = st.columns([1,1,1])
-col2.image(img, width=120)
-st.write("")
-st.write("")
-st.write("")
-st.write("")
-st.markdown('<p class="big-font">Start out by searching a keyword </p>', unsafe_allow_html=True)
-
-search = st.text_input("Enter your keyword")
-tweetNum = st.slider("Select the number of tweets to be searched", min_value=50, max_value=200)
-features = st.multiselect("Select the analysis types you want to conduct", options=["hashtag analysis", "sentiment analysis"])
-st.button("Submit", on_click=run(search, tweetNum, features))
-
-
-
-st.sidebar.markdown('<p class="big-font">Welcome to TwitterSent 🎉 </p>', unsafe_allow_html=True)
-st.sidebar.write("This platform utilizes natural language processing to extract insight from tweets. Currently the tool offers the following options")
-
-code = '''def TwitterSent():
-      hashtag_analysis = "True"
-      sentiment_analysis = "True"
-      print("more to come...")'''
-st.sidebar.code(code, language='python')
-
-with st.sidebar.form("contact_form", clear_on_submit=False):
-   st.write("Want to contact me? Complete the following")
-   radio_val = st.radio("What's your title?", ('Enthusiast','Recruiter'))
-   text_area = st.text_area("Write your comment", max_chars=200, height=50)
-
-   submitted = st.form_submit_button("Submit")
-   if submitted:
-        st.write( "radio", radio_val)
-
-
-
-#Creating a percentage function that will be useful when doing the sentiment analysis
 def percentage(part, whole):
    return 100* float(part)/float(whole)
 
@@ -131,8 +83,6 @@ def sentiment(tweets):
    negative = format(negative, '.2f')
 
 
-   print("How people are reacting on" + keyword + " by analyzing " + str(noOfSearchTerm) + " Tweets.")
-
    if(polarity == 0):
       print("Neutral")
    elif (polarity < 0.00):
@@ -145,10 +95,7 @@ def sentiment(tweets):
    colors = ['yellowgreen', 'gold', 'red']
    patches, texts = plt.pie(sizes, colors=colors, startangle=90)
    plt.legend(patches, labels, loc="best")
-   plt.title('How people are reacting on ' + keyword + 'by analyzing ' + str(noOfSearchTerm) + ' Tweets.')
-   plt.axis('equal')
-   plt.tight_layout()
-   plt.show()
+   st.pyplot(patches)
 
 def hashtag(tweets):
    
@@ -168,7 +115,109 @@ def hashtag(tweets):
    flat_hashtag['hashtags'].value_counts()[:20].plot(kind='barh')
    plt.show()
 
+#Page setup and CSS
+st.set_page_config(
+   layout="centered",
+   page_title="TwitterSent",
+   page_icon="🔎")
+st.markdown("""
+   <style>
+   .big-font {
+      font-size:30px !important;
+      font-weight: 600;
+   }
+   .header {
+      font-size: 40px;
+      font-weight: 900;
+      font-family: 'Arial'
+   }
+   </style>
+   """, unsafe_allow_html=True)
 
+#Page sidebar
+with st.sidebar:
+   st.markdown('<p class="big-font">Welcome to TwitterSent 🎉 </p>', unsafe_allow_html=True)
+   st.write("This platform utilizes natural language processing to extract insight from tweets. Currently the tool offers the following options")
+
+   code = '''def TwitterSent():
+         hashtag_analysis = "True"
+         sentiment_analysis = "True"
+         print("more to come...")'''
+   st.code(code, language='python')
+
+   st.write("")
+   st.write("")
+   with st.form("contact_form", clear_on_submit=False):
+      st.write("Want to contact me? Complete the following")
+      radio_val = st.radio("What's your title?", ('Enthusiast','Recruiter'))
+      text_area = st.text_area("Write your comment", max_chars=200, height=50)
+
+      submitted = st.form_submit_button("Submit")
+      if submitted:
+         st.write( "radio", radio_val)
+
+#///////////////////////////MAIN CONTENT///////////////////////
+#Logo/header
+img = image.imread("logo.png")
+col1, col2, col3 = st.columns([1,1,1])
+col2.image(img, width=120)
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+
+#Search Fields component
+st.header("1. Start out by specifying your search")
+st.write("")
+search = st.text_input("Enter your keyword", value="")
+tweetNum = st.slider("Select the number of tweets to be searched", min_value=50, max_value=200)
+date = st.date_input("Select the day you want to search from (max. 1 week)")
+
+st.write("")
+st.write("")
+st.write("")
+
+st.subheader("Alternatively you can upload a csv of your own")
+uploaded_file = st.file_uploader("Choose a CSV file", type=['csv'], )
+
+st.write("")
+st.write("")
+
+#Fetch Tweets Button
+if st.button("Fetch Tweets"):
+   if uploaded_file is None and search == '':
+       st.error('Please input a keyword or upload a file')
+   else:
+      if uploaded_file is not None:
+         tweets = pd.read_csv(uploaded_file)
+      else:
+         fetchTweets(search, tweetNum, date)
+
+st.write("")
+if tweets is not "":
+   with st.expander("Check out your data"):
+      st.dataframe(tweets)
+      st.write("Want to save it for later? Download it!")
+      st.download_button(label="Download CSV", data=tweets.to_csv().encode('utf-8'), file_name='tweets.csv')
+
+
+st.write("")
+st.write("")
+st.write("")
+
+#Analysis Fields 
+st.header("2. Select the analysis methods you want to perform")
+st.write("")
+features = st.multiselect("Select the analysis method", options=["hashtag analysis", "sentiment analysis"])
+st.write("")
+st.write("")
+
+#Run Analysis Button
+if st.button("Run Analysis"):
+   analysis(features, tweets)
+
+
+st.write(tweets)
 
 
 
