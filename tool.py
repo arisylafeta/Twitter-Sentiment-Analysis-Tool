@@ -1,6 +1,5 @@
 from textblob import TextBlob
 from datetime import timedelta
-import asyncio
 import tweepy
 import matplotlib.pyplot as plt
 from matplotlib import image
@@ -8,7 +7,7 @@ import pandas as pd
 import re
 import streamlit as st
 import credentials
-import corpora
+
 
 
 auth = tweepy.OAuthHandler(credentials.apiKey, credentials.apiKeySecret)
