@@ -207,7 +207,6 @@ st.write("")
 if st.button("Run Analysis"):
    analysis(features, tweets, tweetNum)
 
-st.write(tweets)
 
 
 
