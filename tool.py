@@ -156,7 +156,8 @@ def hashtag():
    st.subheader("Let's examine what your Twitter stack is tagging")
    st.plotly_chart(fig3)
    st.write("There is a total of ", df['count'].sum(), " hashtags within your stack with ", df.shape[0], " being distinct.")
-   st.write("It seems that ", df[0][index.argmax()], " is the most mentioned hashtag amounting to ", df['count'][index.argmax()], " mentions. You can check that tweet below:")
+   st.write("It seems that ", df[0][index.argmax()], " is the most mentioned hashtag amounting to ", df['count'][index.argmax()], " mentions.")
+   st.write("Here is one of those tweets")
    st.markdown(f'''<blockquote class="twitter-tweet"><p lang="en" dir="ltr">{tweets['Text'][index.argmax()]}</p>&mdash; {tweets['User'][index.argmax()]} </blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>''', unsafe_allow_html=True)
    
 
