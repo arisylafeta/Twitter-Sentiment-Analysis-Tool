@@ -1,5 +1,6 @@
 
-apiKey = "WAnzVHUJZLwBrWxlCpSo86CK0"
-apiKeySecret = "d0s4JnADB2HY2xycj7JlJQKc4UAGdLZZMnaM9cuBvWU9XkBu3c"
-accessToken = "1455457811186454530-dI3GomJvxFMLzKiMXMwLSsPAp2sUAn"
-accessTokenSecret = "VueS6hQ7FBGqcZ3WJKSUmdpjeQMe4gVpoocitTnLeccxD"
+apiKey = "foNpUpoHDozF2jdgvFg4ih9Hs"
+apiKeySecret = "bypWCRUwAJspecYT9EJPozVgsxE1tssXTjwI4w1o2EXjI0A6lb"
+accessToken = "1742640596974469120-jyrGbicEBu7sp2bXsZjsBJiXXiF91z"
+accessTokenSecret = "6zA7j9UThfBuQ1pWZRpJTgqABBePL7Jyr1vpDz6AazeBj"
+BearerToken = 'AAAAAAAAAAAAAAAAAAAAAK4sQEAAAAA9pMq0JNSzxniTBTOyARKXgsmxVw%3D4KVJ0adgdqQeq5C2vl4Tnh1oRPUvzWbFPcFUDJa3NLQwnwniKQ'
